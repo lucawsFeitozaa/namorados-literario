@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dia dos Namorados | Clube Entre Livros e Café</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- html2canvas for downloading the letter as an image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <!-- Background Canvas for Hearts Particle Effect -->
+    <canvas id="hearts-canvas"></canvas>
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <div class="logo-container">
+            <svg class="header-logo-svg" viewBox="0 0 100 100" width="48" height="48">
+                <!-- Open Book -->
+                <path d="M20,75 C35,70 50,75 50,75 C50,75 65,70 80,75 L80,35 C65,30 50,35 50,35 C50,35 35,30 20,35 Z" fill="none" stroke="#6d1b29" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Pages detail -->
+                <path d="M20,40 C35,35 50,40 50,40 M50,40 C65,35 80,40 80,40 M20,50 C35,45 50,50 50,50 M50,50 C65,45 80,50 80,50 M20,60 C35,55 50,60 50,60 M50,60 C65,55 80,60 80,60" fill="none" stroke="#6d1b29" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- Coffee cup on book -->
+                <path d="M40,28 L60,28 C60,28 62,38 58,44 C54,48 46,48 42,44 C38,38 40,28 40,28 Z" fill="#fcf6ec" stroke="#6d1b29" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M60,31 C63,31 65,33 65,35 C65,37 63,39 60,39" fill="none" stroke="#6d1b29" stroke-width="2" stroke-linecap="round"/>
+                <!-- Coffee steam -->
+                <path d="M46,24 Q48,20 46,17" fill="none" stroke="#c08497" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M50,23 Q52,19 50,16" fill="none" stroke="#c08497" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M54,24 Q56,20 54,17" fill="none" stroke="#c08497" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="logo-text">
+                <span class="logo-title">CLUBE ENTRE</span>
+                <span class="logo-subtitle">LIVROS E CAFÉ</span>
+            </div>
+        </div>
+        
+        <nav class="nav-links">
+            <a href="#" class="nav-link">INÍCIO</a>
+            <a href="#" class="nav-link active">SOBRE</a>
+            <a href="#" class="nav-link">CLUBE</a>
+            <a href="#" class="nav-link">LIVROS</a>
+            <a href="#" class="nav-link">EVENTOS</a>
+            <a href="#" class="nav-link">BLOG</a>
+            <a href="#" class="nav-link">CONTATO</a>
+            <button class="favorite-btn" aria-label="Favoritos">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            </button>
+        </nav>
+
+        <!-- Cozy Music Toggle Widget -->
+        <div class="music-widget">
+            <button id="music-toggle" class="music-btn" title="Ativar música ambiente aconchegante">
+                <svg class="music-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <!-- Note icon -->
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                </svg>
+                <span class="music-status">Lofi: OFF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="letter-workspace">
+        <div class="letter-card-wrapper">
+            <!-- Paper Sheet (This is the targeted print area for html2canvas) -->
+            <article class="letter-paper" id="letter-paper">
+                <div class="letter-paper-content">
+                    <!-- Header inside the card -->
+                    <p class="letter-presenter">CLUBE ENTRE LIVROS E CAFÉ APRESENTA</p>
+                    
+                    <h1 class="letter-main-title">
+                        <span class="heart-icon-left">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                        </span>
+                        Dia dos Namorados
+                        <span class="heart-icon-right">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                        </span>
+                    </h1>
+                    
+                    <!-- Decorative separator -->
+                    <div class="title-separator">
+                        <svg viewBox="0 0 100 10" width="80" height="10" fill="none" stroke="#6d1b29" stroke-width="1">
+                            <path d="M10,5 H45 Q50,0 50,5 Q50,10 50,5 H90" stroke-linecap="round"/>
+                            <path d="M50,5 A2,2 0 1,1 50,4.9" fill="#6d1b29"/>
+                        </svg>
+                    </div>
+
+                    <!-- Subtitle text -->
+                    <div class="letter-subtitle">
+                        <p>Escreva uma cartinha para o seu <span class="highlight-text">namorado literário</span> <span class="inline-heart">❤️</span></p>
+                        <p>porque todo namorado importa <span class="inline-heart">❤️</span></p>
+                    </div>
+
+                    <!-- Interactive Writing Fields -->
+                    <div class="letter-interactive-body">
+                        <!-- Recipient input -->
+                        <div class="salutation-line">
+                            <span class="label-text">Querido(a)</span>
+                            <span class="editable-field recipient-field" contenteditable="true" data-placeholder="Nome do seu personagem ou autor..."></span>
+                            <span class="comma">,</span>
+                        </div>
+
+                        <!-- Notebook-style letter lines -->
+                        <div class="writing-lines-container">
+                            <div class="letter-text-editor editable-field" contenteditable="true" data-placeholder="Escreva aqui a sua declaração de amor literária... Compartilhe quais livros te fazem lembrar da pessoa, seus trechos favoritos ou crie uma história só de vocês."></div>
+                        </div>
+
+                        <!-- Sign-off line -->
+                        <div class="signoff-line">
+                            <span class="label-text">Com amor,</span>
+                            <div class="signature-row">
+                                <span class="editable-field signature-field" contenteditable="true" data-placeholder="Seu nome..."></span>
+                                <span class="signature-heart">❤️</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom letter artwork -->
+                    <div class="letter-bottom-artwork">
+                        <!-- Round Shop Stamp -->
+                        <div class="stamp-container">
+                            <svg class="stamp-svg" viewBox="0 0 120 120" width="95" height="95">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#8d2e3f" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                <circle cx="60" cy="60" r="48" fill="none" stroke="#8d2e3f" stroke-width="1"/>
+                                <!-- Path for text wrapping -->
+                                <path id="textPathTop" d="M 17,60 A 43,43 0 0,1 103,60" fill="none" />
+                                <path id="textPathBottom" d="M 103,60 A 43,43 0 0,1 17,60" fill="none" />
+                                
+                                <text class="stamp-text" fill="#8d2e3f">
+                                    <textPath href="#textPathTop" startOffset="50%" text-anchor="middle">
+                                        ENTRE LIVROS
+                                    </textPath>
+                                </text>
+                                <text class="stamp-text" fill="#8d2e3f">
+                                    <textPath href="#textPathBottom" startOffset="50%" text-anchor="middle">
+                                        E CAFÉ
+                                    </textPath>
+                                </text>
+                                
+                                <!-- Central coffee cup & heart inside stamp -->
+                                <g transform="translate(48, 46)">
+                                    <path d="M4,15 L20,15 C20,15 21,22 18,26 C15,29 9,29 6,26 C3,22 4,15 4,15 Z" fill="none" stroke="#8d2e3f" stroke-width="1.5" stroke-linejoin="round"/>
+                                    <path d="M20,17 C22,17 23,18 23,20 C23,22 22,23 20,23" fill="none" stroke="#8d2e3f" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M12,8 Q13,5 12,3" fill="none" stroke="#c08497" stroke-width="1" stroke-linecap="round"/>
+                                    <path d="M9,9 Q10,6 9,4" fill="none" stroke="#c08497" stroke-width="1" stroke-linecap="round"/>
+                                    <path d="M15,9 Q16,6 15,4" fill="none" stroke="#c08497" stroke-width="1" stroke-linecap="round"/>
+                                    <path d="M12,20 Q12,20 11.5,19.5 C10.5,18.5 9.5,18.5 9.5,17.5 C9.5,16.5 10.5,16.5 12,18 C13.5,16.5 14.5,16.5 14.5,17.5 C14.5,18.5 13.5,18.5 12.5,19.5 Z" fill="#8d2e3f" />
+                                    <!-- Double dot decorations -->
+                                    <circle cx="1" cy="12" r="1.5" fill="#8d2e3f"/>
+                                    <circle cx="23" cy="12" r="1.5" fill="#8d2e3f"/>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <!-- Envelope illustration -->
+                        <div class="envelope-container">
+                            <svg class="envelope-svg" viewBox="0 0 100 80" width="100" height="80">
+                                <!-- Back envelope shape -->
+                                <path d="M5,15 L95,15 L95,75 L5,75 Z" fill="#e8a5b8" stroke="#8d2e3f" stroke-width="2" stroke-linejoin="round"/>
+                                <!-- Letter card coming out -->
+                                <g transform="translate(15, -5)">
+                                    <path d="M5,20 L65,20 L65,55 L5,55 Z" fill="#fffaf2" stroke="#8d2e3f" stroke-width="1.5"/>
+                                    <!-- Letter line details -->
+                                    <line x1="15" y1="28" x2="55" y2="28" stroke="#dcb4b4" stroke-width="1.5" stroke-linecap="round"/>
+                                    <line x1="15" y1="36" x2="55" y2="36" stroke="#dcb4b4" stroke-width="1.5" stroke-linecap="round"/>
+                                    <!-- Heart on letter -->
+                                    <path d="M35,48 Q35,48 33.5,46.5 C31,44 28,44 28,41 C28,38 31,38 35,42.5 C39,38 42,38 42,41 C42,44 39,44 36.5,46.5 Z" fill="#8d2e3f"/>
+                                </g>
+                                <!-- Envelope side and bottom flaps overlay -->
+                                <path d="M5,15 L50,48 L95,15" fill="none" stroke="#8d2e3f" stroke-width="2" stroke-linejoin="round"/>
+                                <path d="M5,75 L38,40" fill="none" stroke="#8d2e3f" stroke-width="2" stroke-linejoin="round"/>
+                                <path d="M95,75 L62,40" fill="none" stroke="#8d2e3f" stroke-width="2" stroke-linejoin="round"/>
+                                <!-- Little floating heart -->
+                                <path d="M90,5 Q90,5 88,3.5 C85.5,1 82.5,1 82.5,4 C82.5,7 85.5,7 88,11 C90.5,7 93.5,7 93.5,4 C93.5,1 90.5,1 90,3.5 Z" fill="#e8a5b8" transform="rotate(15, 90, 5)"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- Call to Action / Sharing Controls -->
+        <section class="sharing-controls-section">
+            <div class="heart-divider-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="#a43a4d" stroke="none">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            </div>
+            
+            <p class="cta-message">Escreva. Compartilhe. Celebre o amor que vive nas páginas.</p>
+            
+            <button id="download-letter-btn" class="share-btn">
+                COMPARTILHAR MINHA CARTINHA
+                <span class="btn-heart">❤️</span>
+            </button>
+        </section>
+    </main>
+
+    <!-- Footer of the page -->
+    <footer class="main-footer">
+        <div class="footer-grid">
+            <!-- Col 1 -->
+            <div class="footer-col">
+                <div class="footer-icon-wrapper">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                </div>
+                <h3 class="footer-col-title">COMUNIDADE</h3>
+                <p class="footer-col-desc">Leitores apaixonados por histórias</p>
+            </div>
+
+            <!-- Col 2 -->
+            <div class="footer-col">
+                <div class="footer-icon-wrapper">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                        <line x1="6" y1="1" x2="6" y2="4"/>
+                        <line x1="10" y1="1" x2="10" y2="4"/>
+                        <line x1="14" y1="1" x2="14" y2="4"/>
+                    </svg>
+                </div>
+                <h3 class="footer-col-title">CAFÉ & LEITURAS</h3>
+                <p class="footer-col-desc">Dicas, resenhas e muito mais</p>
+            </div>
+
+            <!-- Col 3 -->
+            <div class="footer-col">
+                <div class="footer-icon-wrapper">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </div>
+                <h3 class="footer-col-title">EVENTOS</h3>
+                <p class="footer-col-desc">Encontros literários e experiências únicas</p>
+            </div>
+
+            <!-- Col 4 -->
+            <div class="footer-col">
+                <div class="footer-icon-wrapper">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polyline points="20 12 20 22 4 22 4 12"/>
+                        <rect x="2" y="7" width="20" height="5"/>
+                        <line x1="12" y1="22" x2="12" y2="7"/>
+                        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+                        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                    </svg>
+                </div>
+                <h3 class="footer-col-title">BENEFÍCIOS</h3>
+                <p class="footer-col-desc">Descontos exclusivos para membros</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

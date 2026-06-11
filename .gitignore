@@ -1,0 +1,7 @@
+# Ignore zip files
+website.zip
+*.zip
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
