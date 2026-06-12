@@ -478,67 +478,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .then(() => {
                     showToast('Sua cartinha foi salva no Google Drive com sucesso! ❤️');
+                    proceedWithDownloadAndShare();
                 })
                 .catch(err => {
                     console.error('Erro ao salvar no banco de dados:', err);
-                    showToast('Erro de conexão ao salvar no banco de dados.', true);
+                    showToast('Salvando cartinha localmente...', true);
+                    proceedWithDownloadAndShare();
                 });
 
-                // Download PDF locally
-                const pdfBlob = pdf.output('blob');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = URL.createObjectURL(pdfBlob);
-                const safeDest = dbDestinatario.replace(/[^a-zA-Z0-9]/g, "_");
-                downloadLink.download = `carta-dia-dos-namorados-${safeDest}.pdf`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                function proceedWithDownloadAndShare() {
+                    // Download PDF locally
+                    const pdfBlob = pdf.output('blob');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(pdfBlob);
+                    const safeDest = dbDestinatario.replace(/[^a-zA-Z0-9]/g, "_");
+                    downloadLink.download = `carta-dia-dos-namorados-${safeDest}.pdf`;
+                    downloadLink.target = '_blank'; // Prevents tab unloading on iOS Safari
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
 
-                // Helper to restore button state and trigger success effect
-                const completeExport = () => {
-                    downloadBtn.disabled = false;
-                    downloadBtn.style.opacity = '1';
-                    downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
+                    // Helper to restore button state and trigger success effect
+                    const completeExport = () => {
+                        downloadBtn.disabled = false;
+                        downloadBtn.style.opacity = '1';
+                        downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
 
-                    // Success explosion!
-                    setTimeout(() => {
-                        createHeartExplosion(window.innerWidth / 2, window.innerHeight / 2);
-                    }, 300);
-                };
+                        // Success explosion!
+                        setTimeout(() => {
+                            createHeartExplosion(window.innerWidth / 2, window.innerHeight / 2);
+                        }, 300);
+                    };
 
-                // Check if sharing files is supported via Web Share API
-                if (navigator.canShare && typeof File !== 'undefined') {
-                    try {
-                        const file = new File([pdfBlob], `carta-dia-dos-namorados-${safeDest}.pdf`, { type: 'application/pdf' });
-                        
-                        if (navigator.canShare({ files: [file] })) {
-                            navigator.share({
-                                files: [file],
-                                title: 'Minha Cartinha de Dia dos Namorados',
-                                text: 'Olha a cartinha de Dia dos Namorados que criei no Clube Entre Livros e Café! ❤️'
-                            })
-                            .then(() => {
-                                completeExport();
-                            })
-                            .catch((shareErr) => {
-                                if (shareErr.name === 'AbortError') {
-                                    downloadBtn.disabled = false;
-                                    downloadBtn.style.opacity = '1';
-                                    downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
-                                } else {
-                                    console.error('Erro ao compartilhar via Web Share API:', shareErr);
+                    // Check if sharing files is supported via Web Share API
+                    if (navigator.canShare && typeof File !== 'undefined') {
+                        try {
+                            const file = new File([pdfBlob], `carta-dia-dos-namorados-${safeDest}.pdf`, { type: 'application/pdf' });
+                            
+                            if (navigator.canShare({ files: [file] })) {
+                                navigator.share({
+                                    files: [file],
+                                    title: 'Minha Cartinha de Dia dos Namorados',
+                                    text: 'Olha a cartinha de Dia dos Namorados que criei no Clube Entre Livros e Café! ❤️'
+                                })
+                                .then(() => {
                                     completeExport();
-                                }
-                            });
-                        } else {
+                                })
+                                .catch((shareErr) => {
+                                    if (shareErr.name === 'AbortError') {
+                                        downloadBtn.disabled = false;
+                                        downloadBtn.style.opacity = '1';
+                                        downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
+                                    } else {
+                                        console.error('Erro ao compartilhar via Web Share API:', shareErr);
+                                        completeExport();
+                                    }
+                                });
+                            } else {
+                                completeExport();
+                            }
+                        } catch (err) {
+                            console.error('Erro ao construir arquivo para compartilhamento:', err);
                             completeExport();
                         }
-                    } catch (err) {
-                        console.error('Erro ao construir arquivo para compartilhamento:', err);
+                    } else {
                         completeExport();
                     }
-                } else {
-                    completeExport();
                 }
             }).catch(err => {
                 console.error('Erro ao gerar PDF:', err);
