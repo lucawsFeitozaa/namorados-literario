@@ -11,6 +11,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('download-letter-btn');
     const letterPaper = document.getElementById('letter-paper');
     const editableFields = document.querySelectorAll('.editable-field');
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHfnvjiGessmIgtcGwuWLjClq1HPxE1g2Yw14EQq2ZhaRoxMSVq7QJOzn4wNVRhWI/exec';
+
+    // Helper to show custom premium toast messages
+    function showToast(message, isError = false) {
+        let toast = document.querySelector('.toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            document.body.appendChild(toast);
+        }
+        
+        toast.textContent = message;
+        if (isError) {
+            toast.classList.add('error');
+        } else {
+            toast.classList.remove('error');
+        }
+        
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 5000);
+    }
+
 
     /* ==========================================================================
        1. Background Canvas Hearts Animation & Explosion Effect
@@ -359,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // UI feedback during export
         downloadBtn.disabled = true;
         downloadBtn.style.opacity = '0.7';
-        downloadBtn.innerHTML = 'PREPARANDO IMAGEM... <span class="btn-heart">⏳</span>';
+        downloadBtn.innerHTML = 'PREPARANDO PDF... <span class="btn-heart">⏳</span>';
 
         // Prepare letter content for export
         const recipient = letterPaper.querySelector('.recipient-field');
@@ -402,20 +427,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 letterPaper.classList.remove('export-mode');
 
-                // Helper to fallback to standard download
-                const fallbackDownload = () => {
-                    try {
-                        const imageURI = canvas.toDataURL('image/png');
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = imageURI;
-                        downloadLink.download = 'carta-dia-dos-namorados-literario.png';
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                    } catch (e) {
-                        console.error('Falha no fallback de download:', e);
-                    }
-                };
+                // Generate PDF using jsPDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                // Get high quality JPEG from canvas
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                
+                // Center and scale image inside A4 page
+                const canvasRatio = canvas.height / canvas.width;
+                const margin = 10;
+                const targetWidth = pdfWidth - (margin * 2);
+                let targetHeight = targetWidth * canvasRatio;
+                let x = margin;
+                let y = margin;
+                
+                if (targetHeight > (pdfHeight - (margin * 2))) {
+                    const scaleFactor = (pdfHeight - (margin * 2)) / targetHeight;
+                    const finalWidth = targetWidth * scaleFactor;
+                    const finalHeight = targetHeight * scaleFactor;
+                    x = margin + (targetWidth - finalWidth) / 2;
+                    y = margin;
+                    pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
+                } else {
+                    y = margin + (pdfHeight - (margin * 2) - targetHeight) / 2;
+                    pdf.addImage(imgData, 'JPEG', x, y, targetWidth, targetHeight);
+                }
+
+                // Get PDF Base64 string for database transmission
+                const pdfBase64 = pdf.output('datauristring').split(',')[1];
+                const dbDestinatario = originalRecVal || 'Ninguém';
+                const dbAssinatura = originalSigVal || 'Anônimo';
+
+                // Save PDF to Google Drive / Sheets
+                downloadBtn.innerHTML = 'SALVANDO NO GOOGLE DRIVE... <span class="btn-heart">☁️</span>';
+                
+                fetch(GOOGLE_APP_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Bypasses CORS and successfully triggers doPost
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: JSON.stringify({
+                        destinatario: dbDestinatario,
+                        assinatura: dbAssinatura,
+                        pdfBase64: pdfBase64
+                    })
+                })
+                .then(() => {
+                    showToast('Sua cartinha foi salva no Google Drive com sucesso! ❤️');
+                })
+                .catch(err => {
+                    console.error('Erro ao salvar no banco de dados:', err);
+                    showToast('Erro de conexão ao salvar no banco de dados.', true);
+                });
+
+                // Download PDF locally
+                const pdfBlob = pdf.output('blob');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(pdfBlob);
+                const safeDest = dbDestinatario.replace(/[^a-zA-Z0-9]/g, "_");
+                downloadLink.download = `carta-dia-dos-namorados-${safeDest}.pdf`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
 
                 // Helper to restore button state and trigger success effect
                 const completeExport = () => {
@@ -430,55 +507,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 // Check if sharing files is supported via Web Share API
-                if (navigator.canShare && typeof File !== 'undefined' && canvas.toBlob) {
-                    canvas.toBlob((blob) => {
-                        if (!blob) {
-                            fallbackDownload();
-                            completeExport();
-                            return;
-                        }
+                if (navigator.canShare && typeof File !== 'undefined') {
+                    try {
+                        const file = new File([pdfBlob], `carta-dia-dos-namorados-${safeDest}.pdf`, { type: 'application/pdf' });
                         
-                        try {
-                            const file = new File([blob], 'carta-dia-dos-namorados-literario.png', { type: 'image/png' });
-                            
-                            if (navigator.canShare({ files: [file] })) {
-                                navigator.share({
-                                    files: [file],
-                                    title: 'Minha Cartinha de Dia dos Namorados',
-                                    text: 'Olha a cartinha de Dia dos Namorados que criei no Clube Entre Livros e Café! ❤️'
-                                })
-                                .then(() => {
-                                    completeExport();
-                                })
-                                .catch((shareErr) => {
-                                    // If user cancelled sharing (AbortError), don't trigger download fallback, just restore button state
-                                    if (shareErr.name === 'AbortError') {
-                                        downloadBtn.disabled = false;
-                                        downloadBtn.style.opacity = '1';
-                                        downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
-                                    } else {
-                                        // Other error, fallback to download
-                                        console.error('Erro ao compartilhar via Web Share API:', shareErr);
-                                        fallbackDownload();
-                                        completeExport();
-                                    }
-                                });
-                            } else {
-                                fallbackDownload();
+                        if (navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                files: [file],
+                                title: 'Minha Cartinha de Dia dos Namorados',
+                                text: 'Olha a cartinha de Dia dos Namorados que criei no Clube Entre Livros e Café! ❤️'
+                            })
+                            .then(() => {
                                 completeExport();
-                            }
-                        } catch (err) {
-                            console.error('Erro ao construir arquivo para compartilhamento:', err);
-                            fallbackDownload();
+                            })
+                            .catch((shareErr) => {
+                                if (shareErr.name === 'AbortError') {
+                                    downloadBtn.disabled = false;
+                                    downloadBtn.style.opacity = '1';
+                                    downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
+                                } else {
+                                    console.error('Erro ao compartilhar via Web Share API:', shareErr);
+                                    completeExport();
+                                }
+                            });
+                        } else {
                             completeExport();
                         }
-                    }, 'image/png');
+                    } catch (err) {
+                        console.error('Erro ao construir arquivo para compartilhamento:', err);
+                        completeExport();
+                    }
                 } else {
-                    fallbackDownload();
                     completeExport();
                 }
             }).catch(err => {
-                console.error('Erro ao gerar imagem:', err);
+                console.error('Erro ao gerar PDF:', err);
                 
                 // Revert changes on error
                 if (!originalRecVal) recipient.innerHTML = '';
@@ -489,6 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 downloadBtn.disabled = false;
                 downloadBtn.style.opacity = '1';
                 downloadBtn.innerHTML = 'TENTAR NOVAMENTE <span class="btn-heart">❤️</span>';
+                showToast('Falha ao gerar o arquivo PDF.', true);
             });
         }, 300);
     });
