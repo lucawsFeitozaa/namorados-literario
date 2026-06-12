@@ -402,24 +402,81 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 letterPaper.classList.remove('export-mode');
 
-                // Generate image download
-                const imageURI = canvas.toDataURL('image/png');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = imageURI;
-                downloadLink.download = 'carta-dia-dos-namorados-literario.png';
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                // Helper to fallback to standard download
+                const fallbackDownload = () => {
+                    try {
+                        const imageURI = canvas.toDataURL('image/png');
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = imageURI;
+                        downloadLink.download = 'carta-dia-dos-namorados-literario.png';
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    } catch (e) {
+                        console.error('Falha no fallback de download:', e);
+                    }
+                };
 
-                // Restore button
-                downloadBtn.disabled = false;
-                downloadBtn.style.opacity = '1';
-                downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
+                // Helper to restore button state and trigger success effect
+                const completeExport = () => {
+                    downloadBtn.disabled = false;
+                    downloadBtn.style.opacity = '1';
+                    downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
 
-                // Success explosion!
-                setTimeout(() => {
-                    createHeartExplosion(window.innerWidth / 2, window.innerHeight / 2);
-                }, 300);
+                    // Success explosion!
+                    setTimeout(() => {
+                        createHeartExplosion(window.innerWidth / 2, window.innerHeight / 2);
+                    }, 300);
+                };
+
+                // Check if sharing files is supported via Web Share API
+                if (navigator.canShare && typeof File !== 'undefined' && canvas.toBlob) {
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            fallbackDownload();
+                            completeExport();
+                            return;
+                        }
+                        
+                        try {
+                            const file = new File([blob], 'carta-dia-dos-namorados-literario.png', { type: 'image/png' });
+                            
+                            if (navigator.canShare({ files: [file] })) {
+                                navigator.share({
+                                    files: [file],
+                                    title: 'Minha Cartinha de Dia dos Namorados',
+                                    text: 'Olha a cartinha de Dia dos Namorados que criei no Clube Entre Livros e Café! ❤️'
+                                })
+                                .then(() => {
+                                    completeExport();
+                                })
+                                .catch((shareErr) => {
+                                    // If user cancelled sharing (AbortError), don't trigger download fallback, just restore button state
+                                    if (shareErr.name === 'AbortError') {
+                                        downloadBtn.disabled = false;
+                                        downloadBtn.style.opacity = '1';
+                                        downloadBtn.innerHTML = 'COMPARTILHAR MINHA CARTINHA <span class="btn-heart">❤️</span>';
+                                    } else {
+                                        // Other error, fallback to download
+                                        console.error('Erro ao compartilhar via Web Share API:', shareErr);
+                                        fallbackDownload();
+                                        completeExport();
+                                    }
+                                });
+                            } else {
+                                fallbackDownload();
+                                completeExport();
+                            }
+                        } catch (err) {
+                            console.error('Erro ao construir arquivo para compartilhamento:', err);
+                            fallbackDownload();
+                            completeExport();
+                        }
+                    }, 'image/png');
+                } else {
+                    fallbackDownload();
+                    completeExport();
+                }
             }).catch(err => {
                 console.error('Erro ao gerar imagem:', err);
                 
