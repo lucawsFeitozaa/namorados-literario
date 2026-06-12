@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('download-letter-btn');
     const letterPaper = document.getElementById('letter-paper');
     const editableFields = document.querySelectorAll('.editable-field');
-    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpIp-NapRH6nHsgpc2snnaj0Ia3HuU6q8kXB4nXiN5_RvAgbNT_okTeK0B1GvDh1QS/exec';
+    const GOOGLE_APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbZkgnfv6C8t3aYeoqkh7oPFddLCUu9xowKjqIapMBXFrxvSGYYjSsIOvGLHG52fLn/exec';
 
     // Helper to show custom premium toast messages
     function showToast(message, isError = false) {
